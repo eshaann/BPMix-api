@@ -1,0 +1,7 @@
+Flask
+flask-cors
+librosa
+numpy
+mutagen
+Pillow
+

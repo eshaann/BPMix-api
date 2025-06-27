@@ -1,0 +1,4 @@
+bpmixEnv/
+*.pyc
+__pycache__/
+.env
