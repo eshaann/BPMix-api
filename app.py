@@ -7,6 +7,7 @@ from mutagen.id3 import APIC
 import base64
 from io import BytesIO
 from PIL import Image
+import os
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -148,5 +149,6 @@ def upload_files():
 
     return jsonify(results)
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
