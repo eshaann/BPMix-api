@@ -99,7 +99,7 @@ def extract_artwork(audio_file):
 
 def analyze_file(file_stream):
     file_stream.seek(0)
-    y, sr = librosa.load(file_stream, sr=None, mono=True)
+    y, sr = librosa.load(file_stream, sr=None, mono=True, duration = 20.0)
     tempo, beats = librosa.beat.beat_track(y=y, sr=sr)
     print(type(tempo), tempo)
     tempo = float(tempo)  # convert to scalar float
