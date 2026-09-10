@@ -1,6 +1,8 @@
-bpmixEnv/
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+.git
+.gitignore
 .env
+jbpmixEnv/
