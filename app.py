@@ -149,5 +149,10 @@ def upload_files():
 
     return jsonify(results)
 
+
+@app.route('/health', methods=['GET'])
+def health():
+    return {'status': 'ok'}, 200
+
 if __name__ == '__main__':
     app.run(debug=True)
