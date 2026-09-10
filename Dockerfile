@@ -7,6 +7,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-EXPOSE 5000
+# Add environment variable default
+ENV PORT=8000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+EXPOSE 8000
+
+CMD ["sh", "-c", "gunicorn -b 0.0.0.0:${PORT} app:app"]
