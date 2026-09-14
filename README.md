@@ -1,11 +1,11 @@
 # 🎧 BPMix API
 
-The backend REST API for **[BPMix](https://bpmixdj.com)**-an intelligent audio feature extraction and harmonic track-sequencing engine built with Flask, Librosa, and Mutagen.
+The backend REST API for **[BPMix](https://bpmixdj.com)**—an intelligent audio feature extraction and harmonic track-sequencing engine built with Flask, Librosa, and Mutagen.
 
 ## Live Endpoint
 
 * **Production Base URL:** `https://api.bpmixdj.com`
-* **Web Client:** [https://bpmixdj.com](https://bpmixdj.com)
+* **Web Client:** [bpmixdj.com](https://bpmixdj.com)
 * **Frontend Repository:** [eshaann/BPMix-frontend](https://github.com/eshaann/BPMix-frontend)
 
 ---
@@ -21,7 +21,7 @@ The backend REST API for **[BPMix](https://bpmixdj.com)**-an intelligent audio f
 
 ## API Reference
 
-### 1. Health Check
+### Health Check
 * **`GET /health`**
 * **Response `200 OK`:**
   ```json
