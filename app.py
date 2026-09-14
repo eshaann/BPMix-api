@@ -36,33 +36,29 @@ def camelot_neighbors(camelot_key):
 
 
 def transition_score(song1, song2): 
-    # Higher weight on key compatibility
     bpm_diff = abs(song1['bpm'] - song2['bpm'])
 
     key1 = CAMELOT_MAP.get(song1['key'])
     key2 = CAMELOT_MAP.get(song2['key'])
 
-    # Penalize bad key transitions
     if not key1 or not key2:
-        key_penalty = 100  # unknown = heavy penalty
+        key_penalty = 100
     elif key2 in camelot_neighbors(key1):
-        key_penalty = 0  # ideal
+        key_penalty = 0
     else:
-        key_penalty = 50  # harsh but not total blocker
+        key_penalty = 50
 
-    # Weighted score: key_penalty dominates
     return key_penalty + bpm_diff * 0.5
 
 def order_songs_greedy(songs):
     if not songs:
         return []
     
-    songs = sorted(songs, key=lambda s: s['bpm'])  # sort by bpm to bias direction
-    ordered = [songs.pop(0)]  # start with slowest track
+    songs = sorted(songs, key=lambda s: s['bpm'])
+    ordered = [songs.pop(0)]
 
     while songs:
         last = ordered[-1]
-        # Pick the best next song based on transition score
         next_song = min(songs, key=lambda s: transition_score(last, s))
         ordered.append(next_song)
         songs.remove(next_song)
@@ -70,10 +66,13 @@ def order_songs_greedy(songs):
     return ordered
 
 
-@app.route('/order', methods=['POST'])
+@app.route('/order', methods=['POST', 'OPTIONS'])
 def order_songs():
+    if request.method == 'OPTIONS':
+        return '', 200
+
     try:
-        songs = request.json  # expects list of song dicts
+        songs = request.json
         ordered = order_songs_greedy(songs.copy())
         return jsonify(ordered)
     except Exception as e:
@@ -92,7 +91,6 @@ def extract_artwork(audio_file):
                     artwork = tag.data
                     break
         if artwork:
-            # Convert bytes to base64 string for frontend display
             img = Image.open(BytesIO(artwork))
             buffered = BytesIO()
             img.save(buffered, format="JPEG")
@@ -104,10 +102,14 @@ def extract_artwork(audio_file):
 
 def analyze_file(file_stream):
     file_stream.seek(0)
-    y, sr = librosa.load(file_stream, sr=None, mono=True, duration = 20.0)
+    y, sr = librosa.load(file_stream, sr=None, mono=True, duration=20.0)
     tempo, beats = librosa.beat.beat_track(y=y, sr=sr)
-    print(type(tempo), tempo)
-    tempo = float(tempo)  # convert to scalar float
+    
+    # Safely extract scalar tempo regardless of Librosa version return shape
+    if isinstance(tempo, np.ndarray):
+        tempo = float(tempo.item() if tempo.size == 1 else tempo[0])
+    else:
+        tempo = float(tempo)
     
     chroma = librosa.feature.chroma_cqt(y=y, sr=sr)
     chroma_mean = chroma.mean(axis=1)
@@ -118,9 +120,11 @@ def analyze_file(file_stream):
     return round(tempo), key
 
 
-
-@app.route('/upload', methods=['POST'])
+@app.route('/upload', methods=['POST', 'OPTIONS'])
 def upload_files():
+    if request.method == 'OPTIONS':
+        return '', 200
+
     if 'files' not in request.files:
         return jsonify({"error": "No files part"}), 400
 
@@ -130,18 +134,15 @@ def upload_files():
     for f in files:
         filename = f.filename
 
-        # Read file into bytes buffer for librosa and mutagen
         file_bytes = f.read()
         file_stream = BytesIO(file_bytes)
 
-        # Analyze BPM/key
         try:
             bpm, key = analyze_file(file_stream)
         except Exception as e:
             bpm, key = None, None
             print(f"Error analyzing {filename}: {e}")
 
-        # Reset stream for artwork extraction
         file_stream.seek(0)
         artwork = extract_artwork(file_stream)
 
@@ -149,7 +150,7 @@ def upload_files():
             "title": filename,
             "bpm": bpm,
             "key": key,
-            "artwork": artwork  # base64 jpeg or None
+            "artwork": artwork
         })
 
     return jsonify(results)
