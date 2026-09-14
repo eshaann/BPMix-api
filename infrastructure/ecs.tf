@@ -6,8 +6,8 @@ resource "aws_ecs_task_definition" "api" {
   family                   = "${var.app_name}-api-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = "512"  # 0.5 vCPU
-  memory                   = "1024" # 1 GB
+  cpu    = "1024" # 1 vCPU
+  memory = "2048" # 2 GB RAM
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
 
   runtime_platform {

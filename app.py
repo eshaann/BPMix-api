@@ -10,7 +10,12 @@ from PIL import Image
 import os
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app, origins=[
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+    "https://bpmixdj.com",
+    "https://www.bpmixdj.com"
+])  # Enable CORS for all routes
 
 
 CAMELOT_MAP = {
